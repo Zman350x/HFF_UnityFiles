@@ -1,0 +1,19 @@
+# Ignore all by default
+/*
+
+# Always keep gitignore explicitly
+!/.gitignore
+
+# Handle subdirectories
+!/Assets
+/Assets/*
+
+# Keeps
+!/README.md
+!/AssetBundles
+!/Assets/Portal.prefab
+!/Assets/Portal.prefab.meta
+!/Assets/PortalBase.fbx
+!/Assets/PortalBase.fbx.meta
+!/Assets/Scene1.unity
+!/Assets/Scene1.unity.meta
