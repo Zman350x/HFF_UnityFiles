@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2653791414
+CRC: 1011073779
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 9113aa81c314da272c40f8838b9fcd8a
+    Hash: 814a11f683c0bf7bd05d83220763446a
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2a41b4bd7a59ada2a707bae845b59336
+    Hash: 9cabcd84ce5a5833626c111830a37ecf
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,16 +29,14 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
-- Class: 114
-  Script: {fileID: -806885394, guid: c386120fc5e1d664eaf46f801f628209, type: 3}
-- Class: 114
-  Script: {fileID: -667331979, guid: c386120fc5e1d664eaf46f801f628209, type: 3}
-- Class: 115
-  Script: {instanceID: 0}
 - Class: 222
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
 Assets:
+- Assets/TextMesh Pro/Required/Shaders/TMP_SDF-Surface.shader
+- Assets/PortalMat.mat
+- Assets/Fonts/GoodDog SDF.mat
+- Assets/Shaders/ScreenSpaceCover.shader
 - Assets/Portal.prefab
 Dependencies: []

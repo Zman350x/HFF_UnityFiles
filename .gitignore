@@ -8,6 +8,21 @@
 !/Assets
 /Assets/*
 
+!/Assets/Shaders
+/Assets/Shaders/*
+
+!/Assets/Fonts
+/Assets/Fonts/*
+
+!/Assets/TextMesh Pro
+/Assets/TextMesh Pro/*
+
+!/Assets/TextMesh Pro/Required
+/Assets/TextMesh Pro/Required/*
+
+!/Assets/TextMesh Pro/Required/Shaders
+/Assets/TextMesh Pro/Required/Shaders/*
+
 # Keeps
 !/README.md
 !/AssetBundles
@@ -15,5 +30,13 @@
 !/Assets/Portal.prefab.meta
 !/Assets/PortalBase.fbx
 !/Assets/PortalBase.fbx.meta
+!/Assets/PortalMat.mat
+!/Assets/PortalMat.mat.meta
 !/Assets/Scene1.unity
 !/Assets/Scene1.unity.meta
+!/Assets/Shaders/ScreenSpaceCover.shader
+!/Assets/Shaders/ScreenSpaceCover.shader.meta
+!/Assets/Fonts/GoodDog SDF.mat
+!/Assets/Fonts/GoodDog SDF.mat.meta
+!/Assets/TextMesh Pro/Required/Shaders/TMP_SDF-Surface.shader
+!/Assets/TextMesh Pro/Required/Shaders/TMP_SDF-Surface.shader.meta
