@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2201425633
+CRC: 2014394216
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 002b10ca848b20e02244c6bd38e4b741
+    Hash: b7689d759cf9deed20ccfb0b7659da33
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9cabcd84ce5a5833626c111830a37ecf
+    Hash: 9da1169bfcd2f3ef6e6fa86f35a0b954
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,6 +29,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
+- Class: 72
+  Script: {instanceID: 0}
 - Class: 222
   Script: {instanceID: 0}
 - Class: 224
@@ -38,5 +40,6 @@ Assets:
 - Assets/PortalMat.mat
 - Assets/Fonts/GoodDog SDF.mat
 - Assets/Shaders/ScreenSpaceCover.shader
+- Assets/Shaders/ComputeBounds.compute
 - Assets/Portal.prefab
 Dependencies: []

@@ -1,0 +1,78 @@
+#pragma kernel FindBounds
+#pragma kernel ReduceBounds
+
+struct VertexBounds
+{
+    float2 min;
+    float2 max;
+};
+
+StructuredBuffer<float3> _Vertices;
+RWStructuredBuffer<VertexBounds> _GroupResults;
+RWStructuredBuffer<VertexBounds> _FinalBounds;
+uint _GroupCount;
+
+float4x4 _WorldToViewport;
+
+groupshared float2 localMin[64];
+groupshared float2 localMax[64];
+
+float2 WorldToViewport(float3 worldPos)
+{
+    float4 clipPos = mul(_WorldToViewport, float4(worldPos, 1.0));
+    return (clipPos.xy / clipPos.w) * 0.5 + 0.5;
+}
+
+[numthreads(64, 1, 1)]
+void FindBounds(uint3 id : SV_DISPATCHTHREADID, uint3 groupID : SV_GROUPID, uint groupIndex : SV_GROUPINDEX)
+{
+    uint vertexIndex = id.x;
+    uint vertexCount, stride;
+    _Vertices.GetDimensions(vertexCount, stride);
+
+    if (vertexIndex < vertexCount)
+    {
+        float2 vp = WorldToViewport(_Vertices[vertexIndex]);
+        localMin[groupIndex] = vp;
+        localMax[groupIndex] = vp;
+    }
+    else
+    {
+        localMin[groupIndex] = float2(2.0, 2.0);
+        localMax[groupIndex] = float2(-1.0, -1.0);
+    }
+
+    GroupMemoryBarrierWithGroupSync();
+
+    for (uint stride2 = 32; stride2 > 0; stride2 >>= 1)
+    {
+        if (groupIndex < stride2)
+        {
+            localMin[groupIndex] = min(localMin[groupIndex], localMin[groupIndex + stride2]);
+            localMax[groupIndex] = max(localMax[groupIndex], localMax[groupIndex + stride2]);
+        }
+        GroupMemoryBarrierWithGroupSync();
+    }
+
+    if (groupIndex == 0)
+    {
+        _GroupResults[groupID.x].min = localMin[0];
+        _GroupResults[groupID.x].max = localMax[0];
+    }
+}
+
+[numthreads(1, 1, 1)]
+void ReduceBounds(uint3 id : SV_DISPATCHTHREADID)
+{
+    float2 minVal = _GroupResults[0].min;
+    float2 maxVal = _GroupResults[0].max;
+
+    for (uint i = 1; i < _GroupCount; ++i)
+    {
+        minVal = min(minVal, _GroupResults[i].min);
+        maxVal = max(maxVal, _GroupResults[i].max);
+    }
+
+    _FinalBounds[0].min = minVal;
+    _FinalBounds[0].max = maxVal;
+}

@@ -4,10 +4,6 @@ Shader "Custom/ScreenSpaceCover"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _LockTex ("Texture", 2D) = "black" {}
-        _ObjectScreenMinX ("Screen Min X", Float) = 0.0
-        _ObjectScreenMinY ("Screen Min Y", Float) = 0.0
-        _ObjectScreenMaxX ("Screen Max X", Float) = 1.0
-        _ObjectScreenMaxY ("Screen Max Y", Float) = 1.0
         _MainScaleX ("Scale X", Float) = 1.0
         _MainScaleY ("Scale Y", Float) = 1.0
         _LockScaleX ("Scale X", Float) = 1.0
@@ -94,15 +90,13 @@ Shader "Custom/ScreenSpaceCover"
 
             sampler2D _MainTex;
             sampler2D _LockTex;
-            float _ObjectScreenMinX;
-            float _ObjectScreenMinY;
-            float _ObjectScreenMaxX;
-            float _ObjectScreenMaxY;
             float _MainScaleX;
             float _MainScaleY;
             float _LockScaleX;
             float _LockScaleY;
             float _IsUnlocked;
+
+            StructuredBuffer<float4> _BoundsBuffer;
 
             struct appdata
             {
@@ -129,7 +123,9 @@ Shader "Custom/ScreenSpaceCover"
             {
                 float2 screenUV = i.screenPos.xy / i.screenPos.w;
 
-                float2 objectUV = (screenUV - float2(_ObjectScreenMinX, _ObjectScreenMinY)) / float2(_ObjectScreenMaxX - _ObjectScreenMinX, _ObjectScreenMaxY - _ObjectScreenMinY);
+                float2 boundsMin = _BoundsBuffer[0].xy;
+                float2 boundsMax = _BoundsBuffer[0].zw;
+                float2 objectUV = (screenUV - boundsMin) / (boundsMax - boundsMin);
                 float2 mainUV = (objectUV - 0.5) * float2(_MainScaleX, _MainScaleY) + 0.5;
                 float2 lockUV = (objectUV - 0.5) * float2(_LockScaleX, _LockScaleY) + 0.5;
 
