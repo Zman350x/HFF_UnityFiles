@@ -4,10 +4,8 @@ Shader "Custom/ScreenSpaceCover"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _LockTex ("Texture", 2D) = "black" {}
-        _MainScaleX ("Scale X", Float) = 1.0
-        _MainScaleY ("Scale Y", Float) = 1.0
-        _LockScaleX ("Scale X", Float) = 1.0
-        _LockScaleY ("Scale Y", Float) = 1.0
+        _MainTextureAspect ("MainTextureAspect", Float) = 1.0
+        _LockTextureAspect ("LockTextureAspect", Float) = 1.0
         _OutlineWidth ("Outline Width", Float) = 0.05
         [ToggleOff] _IsUnlocked ("IsUnlocked", Float) = 1.0
     }
@@ -56,17 +54,21 @@ Shader "Custom/ScreenSpaceCover"
             v2f vert(appdata v)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex.xyz + v.normal * _OutlineWidth);
+                float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 worldNormal = UnityObjectToWorldNormal(v.normal);
+                worldPos += normalize(worldNormal) * _OutlineWidth;
+                o.pos = mul(UNITY_MATRIX_VP, float4(worldPos, 1.0));
                 UNITY_TRANSFER_FOG(o, o.pos);
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
+                fixed4 col;
                 if (_IsUnlocked > 0.5)
-                    discard;
-
-                fixed4 col = fixed4(0.1, 0.1, 0.1, 1.0);
+                    col = fixed4(0.52, 0.65, 1.0, 1.0);
+                else
+                    col = fixed4(0.1, 0.1, 0.1, 1.0);
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
@@ -90,10 +92,8 @@ Shader "Custom/ScreenSpaceCover"
 
             sampler2D _MainTex;
             sampler2D _LockTex;
-            float _MainScaleX;
-            float _MainScaleY;
-            float _LockScaleX;
-            float _LockScaleY;
+            float _MainTextureAspect;
+            float _LockTextureAspect;
             float _IsUnlocked;
 
             StructuredBuffer<float4> _BoundsBuffer;
@@ -125,9 +125,34 @@ Shader "Custom/ScreenSpaceCover"
 
                 float2 boundsMin = _BoundsBuffer[0].xy;
                 float2 boundsMax = _BoundsBuffer[0].zw;
+                float objectAspect = (boundsMax.x - boundsMin.x)/(boundsMax.y - boundsMin.y);
+
+                float mainScaleX, mainScaleY, lockScaleX, lockScaleY;
+                if (_MainTextureAspect > objectAspect)
+                {
+                    mainScaleX = objectAspect / _MainTextureAspect;
+                    mainScaleY = 1.0f;
+                }
+                else
+                {
+                    mainScaleX = 1.0f;
+                    mainScaleY = _MainTextureAspect / objectAspect;
+                }
+
+                if (_LockTextureAspect > objectAspect)
+                {
+                    lockScaleX = 1.0f;
+                    lockScaleY = _LockTextureAspect / objectAspect;
+                }
+                else
+                {
+                    lockScaleX = objectAspect / _LockTextureAspect;
+                    lockScaleY = 1.0f;
+                }
+
                 float2 objectUV = (screenUV - boundsMin) / (boundsMax - boundsMin);
-                float2 mainUV = (objectUV - 0.5) * float2(_MainScaleX, _MainScaleY) + 0.5;
-                float2 lockUV = (objectUV - 0.5) * float2(_LockScaleX, _LockScaleY) + 0.5;
+                float2 mainUV = (objectUV - 0.5) * float2(mainScaleX, mainScaleY) + 0.5;
+                float2 lockUV = (objectUV - 0.5) * float2(lockScaleX, lockScaleY) + 0.5;
 
                 if (mainUV.x < 0.0 || mainUV.x > 1.0 || mainUV.y < 0.0 || mainUV.y > 1.0)
                     discard;
